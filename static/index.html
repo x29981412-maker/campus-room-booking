@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研讨空间预约</title>
+<style>
+:root{font:16px/1.55 "Noto Sans SC","Microsoft YaHei",sans-serif;color:#142d29;background:#f1f4ee;--green:#145847;--edge:#d3dfd4;--paper:#fffdf8}
+*{box-sizing:border-box}
+main,header{width:min(1100px,calc(100% - 40px));margin:auto}
+header{padding:42px 0 26px}
+h1{font-size:clamp(32px,6vw,57px);letter-spacing:-.07em;margin:4px 0;line-height:1.12}
+h2{font-size:21px;margin:0 0 14px}
+p{margin:3px 0 12px;color:#3b5850}
+small{color:#38594b}
+.badge{font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--green)}
+.panel{border:1px solid var(--edge);background:var(--paper);border-radius:14px;padding:22px;margin-bottom:16px}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:start}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(69px,1fr));gap:5px;margin-top:10px}
+.slots span{border:1px solid #d6e6da;border-radius:5px;font-size:12px;text-align:center;padding:3px 1px;background:#ecf6ee}
+.slots .busy{background:#f2e8e0;color:#6d4034;border-color:#ecdbd1}
+.slots .past{background:#f0f0ea;color:#5c6960;border-color:#e1e4dd}
+.room{border-top:1px solid var(--edge);padding:13px 0 4px;margin-top:14px}
+label{display:block;font-weight:600;margin:11px 0}
+input,select,button{font:inherit;padding:8px 10px;border-radius:7px}
+input,select{display:block;width:100%;margin-top:4px;border:1px solid #acbdb2;background:#fff;color:inherit}
+button{border:1px solid var(--green);background:var(--green);color:#fff;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+button.secondary{background:#fffdf8;color:var(--green)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#feedback{min-height:22px;margin:12px 0;color:#164f3f}
+#feedback[data-error="true"]{color:#8c372e}
+#active{padding:0;list-style:none}
+#active li{border-top:1px solid var(--edge);padding:9px 0;overflow-wrap:anywhere}
+@media(max-width:740px){.layout{grid-template-columns:1fr}header{padding-top:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">校园空间 · 本地演示</div>
+  <h1>研讨空间预约</h1>
+  <p>查看空闲时段，预约小组讨论室。演示使用虚构房间，不连接校方预约系统。</p>
+</header>
+<main class="layout">
+  <section class="panel">
+    <h2>研讨室时段</h2>
+    <label>日期 <input id="day" type="date" required></label>
+    <small>每格 30 分钟。仅接受未来时段。</small>
+    <div id="rooms" aria-live="polite"></div>
+  </section>
+  <div>
+    <section class="panel">
+      <h2>提交预约</h2>
+      <form id="book">
+        <label>房间 <select id="room" required></select></label>
+        <label>活动名称 <input id="title" maxlength="40" required placeholder="例如：课程小组讨论"></label>
+        <div class="fields">
+          <label>开始 <select id="start" required></select></label>
+          <label>结束 <select id="end" required></select></label>
+        </div>
+        <label>人数 <input id="attendees" type="number" min="3" max="10" value="3" required></label>
+        <button id="submit" type="submit" disabled>确认预约</button>
+      </form>
+      <p id="feedback" role="status"></p>
+    </section>
+    <section class="panel">
+      <h2>本浏览器的预约</h2>
+      <ul id="active"></ul>
+    </section>
+  </div>
+</main>
+<script src="/booking.js" defer></script>
+</body>
+</html>
