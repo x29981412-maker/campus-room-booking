@@ -1,74 +1,63 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>研讨空间预约</title>
-<style>
-:root{font:16px/1.55 "Noto Sans SC","Microsoft YaHei",sans-serif;color:#142d29;background:#f1f4ee;--green:#145847;--edge:#d3dfd4;--paper:#fffdf8}
-*{box-sizing:border-box}
-main,header{width:min(1100px,calc(100% - 40px));margin:auto}
-header{padding:42px 0 26px}
-h1{font-size:clamp(32px,6vw,57px);letter-spacing:-.07em;margin:4px 0;line-height:1.12}
-h2{font-size:21px;margin:0 0 14px}
-p{margin:3px 0 12px;color:#3b5850}
-small{color:#38594b}
-.badge{font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--green)}
-.panel{border:1px solid var(--edge);background:var(--paper);border-radius:14px;padding:22px;margin-bottom:16px}
-.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:start}
-.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(69px,1fr));gap:5px;margin-top:10px}
-.slots span{border:1px solid #d6e6da;border-radius:5px;font-size:12px;text-align:center;padding:3px 1px;background:#ecf6ee}
-.slots .busy{background:#f2e8e0;color:#6d4034;border-color:#ecdbd1}
-.slots .past{background:#f0f0ea;color:#5c6960;border-color:#e1e4dd}
-.room{border-top:1px solid var(--edge);padding:13px 0 4px;margin-top:14px}
-label{display:block;font-weight:600;margin:11px 0}
-input,select,button{font:inherit;padding:8px 10px;border-radius:7px}
-input,select{display:block;width:100%;margin-top:4px;border:1px solid #acbdb2;background:#fff;color:inherit}
-button{border:1px solid var(--green);background:var(--green);color:#fff;cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
-button.secondary{background:#fffdf8;color:var(--green)}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#feedback{min-height:22px;margin:12px 0;color:#164f3f}
-#feedback[data-error="true"]{color:#8c372e}
-#active{padding:0;list-style:none}
-#active li{border-top:1px solid var(--edge);padding:9px 0;overflow-wrap:anywhere}
-@media(max-width:740px){.layout{grid-template-columns:1fr}header{padding-top:22px}}
-</style>
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>研讨空间预约</title><link rel="stylesheet" href="/styles.css?v=2"></head>
 <body>
-<header>
-  <div class="badge">校园空间 · 本地演示</div>
-  <h1>研讨空间预约</h1>
-  <p>查看空闲时段，预约小组讨论室。演示使用虚构房间，不连接校方预约系统。</p>
-</header>
-<main class="layout">
-  <section class="panel">
-    <h2>研讨室时段</h2>
-    <label>日期 <input id="day" type="date" required></label>
-    <small>每格 30 分钟。仅接受未来时段。</small>
-    <div id="rooms" aria-live="polite"></div>
-  </section>
-  <div>
-    <section class="panel">
-      <h2>提交预约</h2>
-      <form id="book">
-        <label>房间 <select id="room" required></select></label>
-        <label>活动名称 <input id="title" maxlength="40" required placeholder="例如：课程小组讨论"></label>
-        <div class="fields">
-          <label>开始 <select id="start" required></select></label>
-          <label>结束 <select id="end" required></select></label>
-        </div>
-        <label>人数 <input id="attendees" type="number" min="3" max="10" value="3" required></label>
-        <button id="submit" type="submit" disabled>确认预约</button>
-      </form>
-      <p id="feedback" role="status"></p>
-    </section>
-    <section class="panel">
-      <h2>本浏览器的预约</h2>
-      <ul id="active"></ul>
-    </section>
-  </div>
-</main>
-<script src="/booking.js" defer></script>
-</body>
-</html>
+<header><div class="frame mast"><div class="identity"><div class="mark">研</div><div><strong>研讨空间</strong><small>上海高校预约演示</small></div></div>
+<nav aria-label="切换工作区"><button id="student-tab" class="nav active">学生预约</button><button id="admin-tab" class="nav">管理员工作台</button></nav></div></header>
+<main class="frame">
+<div id="notice" class="notice" role="status" hidden></div>
+<div id="student">
+<section class="hero"><div><p class="kicker">共享学习空间</p><h1>找一间房，<br>安排一次讨论。</h1><p>查看空位，选择设备与容量，提交小组研讨预约。</p></div><aside><b>预约规则</b><span>提前 7 天内 · 3 人起 · 单次至多 4 小时</span><small>演示房间与时段独立配置</small></aside></section>
+<div class="columns">
+<section class="card">
+<div class="card-top"><div><p class="kicker">空间与时段</p><h2>预约日历</h2></div><div class="switch" aria-label="日历视图"><button data-view="day" class="active">日</button><button data-view="week">周</button><button data-view="month">月</button></div></div>
+<div class="schedule-controls"><label>预约日期<input id="day" type="date"></label><label>查看人数<select id="room-filter"><option value="0">全部房间</option><option value="5">至少 5 人</option><option value="7">至少 7 人</option></select></label></div>
+<div id="calendar" hidden></div>
+<div id="room-list"></div>
+<p class="legend"><span>● 空闲</span><span>● 已预约</span><span>● 封闭</span></p>
+</section>
+<div>
+<section class="card"><p class="kicker">我的安排</p><h2>提交预约</h2>
+<form id="booking-form">
+<label>房间<select id="room" required></select></label>
+<label>活动名称<input id="title" placeholder="例如：课程小组讨论" maxlength="40" required></label>
+<div class="pair"><label>开始<select id="start" required></select></label><label>结束<select id="end" required></select></label></div>
+<div class="pair"><label>人数<input id="people" type="number" min="3" max="30" value="3" required></label><label>连续天数<input id="days" type="number" min="1" max="7" value="1" required></label></div>
+<p class="muted" id="rule-note"></p><button id="submit" class="primary" disabled>确认预约</button>
+</form></section>
+<section class="card"><div class="card-top"><h2>我的预约</h2><button class="secondary" id="refresh-mine">刷新</button></div><div id="mine"></div></section>
+</div></div></div>
+<div id="admin" hidden>
+<section class="hero admin-hero"><div><p class="kicker">空间运营</p><h1>管理员工作台</h1><p>集中处理审批、开放配置和设备维护。</p></div><button id="logout" class="secondary" hidden>退出管理</button></section>
+<section id="admin-login" class="card login">
+<h2>进入运营工作台</h2><p>使用启动服务时设置的管理员口令。</p>
+<form id="login-form"><label>管理员口令<input id="password" type="password" autocomplete="current-password" required></label><button class="primary">登录</button></form>
+</section>
+<div id="admin-body" hidden>
+<section class="card"><div class="card-top"><h2>预约概览</h2><button class="secondary" id="csv">导出 CSV</button></div>
+<div class="schedule-controls"><label>起始日期<input id="report-first" type="date"></label><label>结束日期<input id="report-last" type="date"></label><button class="secondary" id="admin-refresh">查看</button></div>
+<div id="metrics" class="metrics"></div><div class="report-table"><table>
+<caption>按房间统计</caption><thead><tr><th scope="col">房间</th><th scope="col">预约</th><th scope="col">待审批</th><th scope="col">取消</th><th scope="col">爽约</th><th scope="col">签到场次预约时长</th></tr></thead><tbody id="room-report"></tbody>
+</table></div></section>
+<section class="card"><div class="card-top"><h2>预约与审批</h2><label>状态筛选<select id="queue-filter"><option value="all">全部</option><option value="pending">待审批</option><option value="confirmed">已确认</option><option value="no_show">爽约</option></select></label></div><div id="queue"></div></section>
+<div class="columns">
+<section class="card"><h2>房间配置</h2><div id="manage-rooms"></div>
+<form id="room-form" class="divider"><div class="pair"><label>房间编号<input id="edit-id" placeholder="D" maxlength="8" required></label><label>房间名称<input id="edit-name" maxlength="30" required></label></div>
+<div class="pair"><label>区域<input id="edit-area" maxlength="30" required></label><label>容量<input id="edit-cap" type="number" min="3" max="30" value="6" required></label></div>
+<label>设备<input id="edit-equip" maxlength="80"></label>
+<div class="pair"><label class="checkbox"><input id="edit-active" type="checkbox" checked>开放预约</label><label class="checkbox"><input id="edit-approval" type="checkbox">需审核</label></div>
+<button class="primary">保存房间</button></form></section>
+<section class="card"><h2>维护封闭</h2><div id="closures"></div>
+<form id="closure-form" class="divider">
+<label>房间<select id="closure-room" required></select></label><label>日期<input id="closure-day" type="date" required></label>
+<div class="pair"><label>开始<input id="closure-start" type="time" value="12:00" step="1800" required></label><label>结束<input id="closure-end" type="time" value="14:00" step="1800" required></label></div>
+<label>原因<input id="closure-reason" maxlength="60" placeholder="例如：设备维护" required></label><button class="primary">新增封闭时段</button>
+</form></section>
+</div>
+<section class="card"><h2>操作记录</h2><div id="audit"></div></section>
+</div></div>
+</main><footer class="frame">高校研讨空间 · 本地演示项目</footer>
+<script src="/booking.js?v=2" defer></script>
+</body></html>
+
